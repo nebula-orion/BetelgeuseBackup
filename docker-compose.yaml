@@ -1,0 +1,36 @@
+version: "3"
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+        - "3306:3306"
+        - "33060:33060"
+    volumes:
+        - ./build/db:/var/lib/mysql
+        - ./build/db/init:/docker-entrypoint-initdb.d
+    restart: always
+    networks:
+        net:
+  app:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+      - ./build/betelgeuse:/src
+    depends_on:
+        - db
+    networks:
+      net:
+
+volumes:
+    db:
+    betelgeuse:
+
+networks:
+    net:
+
