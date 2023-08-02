@@ -27,7 +27,7 @@ jobs:
         run: |
           tox
 
-  build:
+  version:
     needs: test
     runs-on: ubuntu-latest
     env:
@@ -46,8 +46,8 @@ jobs:
       - name: Bump version
         id: tag_bump
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "khiladisngh@github.com"
+          git config --local user.name "Gishant Singh"
           bump2version --commit --tag patch
       - name: Push tag
         run: |
