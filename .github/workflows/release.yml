@@ -5,11 +5,12 @@ on:
     tags:
       - '*'
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
+
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.5.3
