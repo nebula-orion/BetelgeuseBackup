@@ -6,34 +6,52 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        python-version: [ '3.11' ]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3.5.3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4.7.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox tox-gh-actions
+      - name: Run Tests
+        run: |
+          tox
 
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3.5.3
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4.7.0
         with:
           python-version: 3.11
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install bump2version
-
       - name: Bump version
         id: tag_bump
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           bump2version --commit --tag patch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Push tag
         run: |
           git push origin --tags
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push changes
+        run: |
+          git push origin main
